@@ -1,6 +1,6 @@
 pipeline {
         agent {
-            abel 'Slave_Induccion'
+            label 'Slave_Induccion'
         }
 
         triggers {
