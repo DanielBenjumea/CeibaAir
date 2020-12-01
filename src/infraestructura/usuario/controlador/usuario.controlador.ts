@@ -20,7 +20,6 @@ export class UsuarioControlador {
 		await this._manejadorRegistrarUsuario.ejecutar(comandoRegistrarUsuario);
 	}
 
-	@UseGuards(AuthGuard('jwt'))
 	@Get()
 	async listar(): Promise<UsuarioDto[]> {
 		return this._manejadorListarUsuario.ejecutar();
