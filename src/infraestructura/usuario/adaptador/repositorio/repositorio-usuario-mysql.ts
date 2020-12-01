@@ -7,20 +7,21 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class RepositorioUsuarioMysql implements RepositorioUsuario {
-  constructor(
-    @InjectRepository(UsuarioEntidad)
-    private readonly repositorio: Repository<UsuarioEntidad>,
-  ) {}
+	constructor(@InjectRepository(UsuarioEntidad) private readonly repositorio: Repository<UsuarioEntidad>) {}
 
-  async existeNombreUsuario(nombre: string): Promise<boolean> {
-    return (await this.repositorio.count({ nombre })) > 0;
-  }
+	async existeNombreUsuario(nombre: string): Promise<boolean> {
+		return (await this.repositorio.count({ nombre })) > 0;
+	}
 
-  async guardar(usuario: Usuario) {
-    const entidad = new UsuarioEntidad();
-    entidad.clave = usuario.clave;
-    entidad.fechaCreacion = usuario.fechaCreacion;
-    entidad.nombre = usuario.nombre;
-    await this.repositorio.save(entidad);
-  }
+	async guardar(usuario: Usuario) {
+		const entidad = new UsuarioEntidad();
+		entidad.clave = usuario.clave;
+		entidad.fechaCreacion = usuario.fechaCreacion;
+		entidad.nombre = usuario.nombre;
+		await this.repositorio.save(entidad);
+	}
+
+	async findUsuarioByName(nombre: string): Promise<UsuarioEntidad> {
+		return await this.repositorio.findOne({ nombre });
+	}
 }
