@@ -6,9 +6,9 @@ import { ManejadorSignInUsuario } from 'src/aplicacion/usuario/comando/signin-us
 export class ServicioAuth {
 	constructor(private _manejadorSignInUsuario: ManejadorSignInUsuario, private jwtService: JwtService) {}
 
-	async validateUser(nombre: string, clave: string): Promise<any> {
+	async validateUser(nombre: string, claveUsuario: string): Promise<any> {
 		const user = await this._manejadorSignInUsuario.ejecutar(nombre);
-		if (user && user.clave === clave) {
+		if (user && user.clave === claveUsuario) {
 			const { clave, ...result } = user;
 			return result;
 		}
