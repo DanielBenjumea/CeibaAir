@@ -18,10 +18,19 @@ export class RepositorioUsuarioMysql implements RepositorioUsuario {
 		entidad.clave = usuario.clave;
 		entidad.fechaCreacion = usuario.fechaCreacion;
 		entidad.nombre = usuario.nombre;
+		entidad.isAdmin = usuario.isAdmin;
 		await this.repositorio.save(entidad);
 	}
 
 	async findUsuarioByName(nombre: string): Promise<UsuarioEntidad> {
 		return await this.repositorio.findOne({ nombre });
+	}
+
+	async findUsuarioById(id: number): Promise<UsuarioEntidad> {
+		return await this.repositorio.findOne({ id });
+	}
+
+	async actualizarMontoUsuario(user: UsuarioEntidad) {
+		await this.repositorio.save(user);
 	}
 }

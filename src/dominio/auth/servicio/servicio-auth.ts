@@ -17,9 +17,9 @@ export class ServicioAuth {
 	}
 
 	async login(user: any) {
-		const payload = { username: user.nombre, sub: user.id };
+		const { fechaCreacion, ...usuario } = user;
 		return {
-			token: this.jwtService.sign(payload)
+			token: this.jwtService.sign(usuario)
 		};
 	}
 }

@@ -5,4 +5,6 @@ export abstract class RepositorioUsuario {
 	abstract async existeNombreUsuario(nombre: string): Promise<boolean>;
 	abstract async guardar(usuario: Usuario);
 	abstract async findUsuarioByName(nombre: string): Promise<UsuarioEntidad>;
+	abstract async findUsuarioById(id: number): Promise<UsuarioEntidad>;
+	abstract async actualizarMontoUsuario(user: UsuarioEntidad);
 }

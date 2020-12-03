@@ -4,6 +4,7 @@ import { ComandoAgregarVuelo } from 'src/aplicacion/vuelo/comando/agregar-vuelo.
 import { ManejadorAgregarVuelo } from 'src/aplicacion/vuelo/comando/agregar-vuelo.manejador';
 import { ComandoEnlistarVuelo } from 'src/aplicacion/vuelo/comando/enlistar-vuelo.comando';
 import { ManejadorEnlistarVuelo } from 'src/aplicacion/vuelo/comando/enlistar-vuelo.manejador';
+import { RolesGuard } from 'src/infraestructura/Guards/roles.guard';
 
 @Controller('vuelos')
 export class VueloControlador {
@@ -13,6 +14,7 @@ export class VueloControlador {
 	) {}
 
 	@Post()
+	@UseGuards(AuthGuard('jwt'), RolesGuard)
 	@UsePipes(new ValidationPipe({ transform: true }))
 	async crear(@Body() comandoAgregarVuelo: ComandoAgregarVuelo) {
 		await this._manejadorAgregarVuelo.ejecutar(comandoAgregarVuelo);

@@ -12,6 +12,9 @@ import { UsuarioEntidad } from '../entidad/usuario.entidad';
 import { ManejadorSignInUsuario } from 'src/aplicacion/usuario/comando/signin-usuario.manejador';
 import { ServicioSignInUsuario } from 'src/dominio/usuario/servicio/servicio-signin-usuario';
 import { servicioSignInUsuarioProveedor } from './servicio/servicio-signin-usuario.proveedor';
+import { ServicioActualizarMontoUsuario } from 'src/dominio/usuario/servicio/servicio-actualizar-monto-usuario';
+import { servicioActualizarMontoUsuarioProveedor } from './servicio/servicio-actualizar-monto-usuario.proveedor';
+import { ManejadorActualizarMontoUsuario } from 'src/aplicacion/usuario/comando/actualizar-monto-usuario.manejador';
 
 @Module({
 	imports: [ TypeOrmModule.forFeature([ UsuarioEntidad ]) ],
@@ -21,19 +24,31 @@ import { servicioSignInUsuarioProveedor } from './servicio/servicio-signin-usuar
 			inject: [ RepositorioUsuario ],
 			useFactory: servicioRegistrarUsuarioProveedor
 		},
-		{ provide: ServicioSignInUsuario, inject: [ RepositorioUsuario ], useFactory: servicioSignInUsuarioProveedor },
+		{
+			provide: ServicioSignInUsuario,
+			inject: [ RepositorioUsuario ],
+			useFactory: servicioSignInUsuarioProveedor
+		},
+		{
+			provide: ServicioActualizarMontoUsuario,
+			inject: [ RepositorioUsuario ],
+			useFactory: servicioActualizarMontoUsuarioProveedor
+		},
 		repositorioUsuarioProvider,
 		daoUsuarioProvider,
 		ManejadorRegistrarUsuario,
 		ManejadorListarUsuario,
-		ManejadorSignInUsuario
+		ManejadorSignInUsuario,
+		ManejadorActualizarMontoUsuario
 	],
 	exports: [
 		ServicioRegistrarUsuario,
+		ServicioSignInUsuario,
+		ServicioActualizarMontoUsuario,
 		ManejadorRegistrarUsuario,
 		ManejadorListarUsuario,
-		ServicioSignInUsuario,
 		ManejadorSignInUsuario,
+		ManejadorActualizarMontoUsuario,
 		RepositorioUsuario,
 		DaoUsuario
 	]

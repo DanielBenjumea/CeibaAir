@@ -28,8 +28,8 @@ export class RepositorioVueloMysql implements RepositorioVuelo {
 			relations: [ 'passengers' ]
 		});
 		const usuarioExists = vueloEntidad.passengers.find(user => user.id === usuario);
-		const usuarioEntidad: UsuarioEntidad = await this.usuarioRepositorio.findOne(usuario);
 		if(!usuarioExists) {
+			const usuarioEntidad: UsuarioEntidad = await this.usuarioRepositorio.findOne(usuario);
 			vueloEntidad.passengers.push(usuarioEntidad)
 		}
 		await this.vueloRepositorio.save(vueloEntidad);
