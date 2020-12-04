@@ -20,6 +20,7 @@ import { ServicioActualizarMontoUsuario } from 'src/dominio/usuario/servicio/ser
 import { ManejadorActualizarMontoUsuario } from 'src/aplicacion/usuario/comando/actualizar-monto-usuario.manejador';
 import { AuthGuard } from '@nestjs/passport';
 import { servicioActualizarMontoUsuarioProveedor } from 'src/infraestructura/usuario/proveedor/servicio/servicio-actualizar-monto-usuario.proveedor';
+import { UsuarioEntidad } from 'src/infraestructura/usuario/entidad/usuario.entidad';
 
 /**
  * Un sandbox es util cuando el módulo de nest se configura una sola vez durante el ciclo completo de pruebas
@@ -137,12 +138,6 @@ describe('Pruebas al controlador de usuarios', () => {
 	});
 
 	it('deberia fallar al tener un usuario incorrecto', async () => {
-		const usuario: ComandoRegistrarUsuario = {
-			nombre: 'Lorem ipsum',
-			fechaCreacion: new Date().toISOString(),
-			clave: '1234'
-		};
-
 		const response = await request(app.getHttpServer())
 			.patch('/usuarios/actualizar-monto')
 			.send({ monto: 500000 })
@@ -151,4 +146,26 @@ describe('Pruebas al controlador de usuarios', () => {
 
 		expect(response.body.message).toBe(mensaje);
 	});
+
+	it('debería fallar al registrar un usuario con más de 1000000 de saldo', async () => {
+		const usuario: UsuarioEntidad = {
+			id: 1,
+			nombre: 'lorem ipsum',
+			fechaCreacion: new Date(),
+			isAdmin: false,
+			clave: 'lorem ipsum',
+			monto: 100000
+
+		}
+		repositorioUsuario.findUsuarioById.returns(Promise.resolve(usuario))
+
+		const response = await request(app.getHttpServer())
+			.patch('/usuarios/actualizar-monto')
+			.send({ monto: 5000000 })
+			.expect(HttpStatus.BAD_REQUEST);
+		const mensaje = 'El monto máximo por usuario es 1000000';
+
+		expect(response.body.message).toBe(mensaje);
+
+	})
 });
