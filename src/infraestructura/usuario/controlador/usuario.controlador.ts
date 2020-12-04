@@ -5,7 +5,6 @@ import { ManejadorActualizarMontoUsuario } from 'src/aplicacion/usuario/comando/
 import { ManejadorListarUsuario } from 'src/aplicacion/usuario/consulta/listar-usuarios.manejador';
 import { UsuarioDto } from 'src/aplicacion/usuario/consulta/dto/usuario.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { IsNumber } from 'class-validator';
 
 @Controller('usuarios')
 export class UsuarioControlador {
