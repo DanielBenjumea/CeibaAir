@@ -9,9 +9,6 @@ import { ManejadorListarUsuario } from 'src/aplicacion/usuario/consulta/listar-u
 import { DaoUsuario } from 'src/dominio/usuario/puerto/dao/dao-usuario';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsuarioEntidad } from '../entidad/usuario.entidad';
-import { ManejadorSignInUsuario } from 'src/aplicacion/usuario/comando/signin-usuario.manejador';
-import { ServicioSignInUsuario } from 'src/dominio/usuario/servicio/servicio-signin-usuario';
-import { servicioSignInUsuarioProveedor } from './servicio/servicio-signin-usuario.proveedor';
 import { ServicioActualizarMontoUsuario } from 'src/dominio/usuario/servicio/servicio-actualizar-monto-usuario';
 import { servicioActualizarMontoUsuarioProveedor } from './servicio/servicio-actualizar-monto-usuario.proveedor';
 import { ManejadorActualizarMontoUsuario } from 'src/aplicacion/usuario/comando/actualizar-monto-usuario.manejador';
@@ -25,11 +22,6 @@ import { ManejadorActualizarMontoUsuario } from 'src/aplicacion/usuario/comando/
 			useFactory: servicioRegistrarUsuarioProveedor
 		},
 		{
-			provide: ServicioSignInUsuario,
-			inject: [ RepositorioUsuario ],
-			useFactory: servicioSignInUsuarioProveedor
-		},
-		{
 			provide: ServicioActualizarMontoUsuario,
 			inject: [ RepositorioUsuario ],
 			useFactory: servicioActualizarMontoUsuarioProveedor
@@ -38,16 +30,13 @@ import { ManejadorActualizarMontoUsuario } from 'src/aplicacion/usuario/comando/
 		daoUsuarioProvider,
 		ManejadorRegistrarUsuario,
 		ManejadorListarUsuario,
-		ManejadorSignInUsuario,
 		ManejadorActualizarMontoUsuario
 	],
 	exports: [
 		ServicioRegistrarUsuario,
-		ServicioSignInUsuario,
 		ServicioActualizarMontoUsuario,
 		ManejadorRegistrarUsuario,
 		ManejadorListarUsuario,
-		ManejadorSignInUsuario,
 		ManejadorActualizarMontoUsuario,
 		RepositorioUsuario,
 		DaoUsuario

@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { ManejadorAuth } from 'src/aplicacion/auth/auth-manejador';
 import { ServicioAuth } from 'src/dominio/auth/servicio/servicio-auth';
 import { JwtStrategy } from 'src/dominio/auth/strategies/jwt.strategy';
 import { LocalStrategy } from 'src/dominio/auth/strategies/local.strategy';
@@ -17,7 +18,7 @@ import { AuthController } from './controller/auth.controller';
 			signOptions: { expiresIn: '60s' }
 		})
 	],
-	providers: [ ServicioAuth, LocalStrategy, JwtStrategy ],
+	providers: [ ServicioAuth, LocalStrategy, JwtStrategy, ManejadorAuth ],
 	exports: [ ServicioAuth ],
 	controllers: [ AuthController ]
 })

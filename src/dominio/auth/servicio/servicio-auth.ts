@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ManejadorSignInUsuario } from 'src/aplicacion/usuario/comando/signin-usuario.manejador';
+import { RepositorioUsuario } from 'src/dominio/usuario/puerto/repositorio/repositorio-usuario';
 
 @Injectable()
 export class ServicioAuth {
-	constructor(private _manejadorSignInUsuario: ManejadorSignInUsuario, private jwtService: JwtService) {}
+	constructor(private readonly _repositorioUsuario: RepositorioUsuario, private jwtService: JwtService) {}
 
 	async validateUser(nombre: string, claveUsuario: string): Promise<any> {
-		const user = await this._manejadorSignInUsuario.ejecutar(nombre);
+		const user = await this._repositorioUsuario.findUsuarioByName(nombre);
 		if (user && user.clave === claveUsuario) {
 			const { clave, ...result } = user;
 			return result;
