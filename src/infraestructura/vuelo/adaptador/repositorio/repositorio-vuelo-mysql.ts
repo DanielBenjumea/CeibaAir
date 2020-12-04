@@ -23,7 +23,6 @@ export class RepositorioVueloMysql implements RepositorioVuelo {
 	}
 
 	async enlistar(vuelo: number, usuario: number) {
-		console.log(usuario);
 		const vueloEntidad: VueloEntidad = await this.vueloRepositorio.findOne(vuelo, {
 			relations: [ 'passengers' ]
 		});

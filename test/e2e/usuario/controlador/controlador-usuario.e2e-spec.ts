@@ -2,7 +2,7 @@ import * as request from 'supertest';
 import { Test } from '@nestjs/testing';
 import { RepositorioUsuario } from 'src/dominio/usuario/puerto/repositorio/repositorio-usuario';
 import { DaoUsuario } from 'src/dominio/usuario/puerto/dao/dao-usuario';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { FiltroExcepcionesDeNegocio } from 'src/infraestructura/excepciones/filtro-excepciones-negocio';
 import { UsuarioControlador } from 'src/infraestructura/usuario/controlador/usuario.controlador';
 import { ServicioRegistrarUsuario } from 'src/dominio/usuario/servicio/servicio-registrar-usuario';
@@ -16,6 +16,10 @@ import { createStubObj } from '../../../util/create-object.stub';
 import { ManejadorSignInUsuario } from 'src/aplicacion/usuario/comando/signin-usuario.manejador';
 import { ServicioSignInUsuario } from 'src/dominio/usuario/servicio/servicio-signin-usuario';
 import { servicioSignInUsuarioProveedor } from 'src/infraestructura/usuario/proveedor/servicio/servicio-signin-usuario.proveedor';
+import { ServicioActualizarMontoUsuario } from 'src/dominio/usuario/servicio/servicio-actualizar-monto-usuario';
+import { ManejadorActualizarMontoUsuario } from 'src/aplicacion/usuario/comando/actualizar-monto-usuario.manejador';
+import { AuthGuard } from '@nestjs/passport';
+import { servicioActualizarMontoUsuarioProveedor } from 'src/infraestructura/usuario/proveedor/servicio/servicio-actualizar-monto-usuario.proveedor';
 
 /**
  * Un sandbox es util cuando el módulo de nest se configura una sola vez durante el ciclo completo de pruebas
@@ -31,7 +35,10 @@ describe('Pruebas al controlador de usuarios', () => {
    * No Inyectar los módulos completos (Se trae TypeORM y genera lentitud al levantar la prueba, traer una por una las dependencias)
    **/
 	beforeAll(async () => {
-		repositorioUsuario = createStubObj<RepositorioUsuario>([ 'existeNombreUsuario', 'guardar' ], sinonSandbox);
+		repositorioUsuario = createStubObj<RepositorioUsuario>(
+			[ 'existeNombreUsuario', 'guardar', 'findUsuarioByName', 'actualizarMontoUsuario', 'findUsuarioById' ],
+			sinonSandbox
+		);
 		daoUsuario = createStubObj<DaoUsuario>([ 'listar' ], sinonSandbox);
 		const moduleRef = await Test.createTestingModule({
 			controllers: [ UsuarioControlador ],
@@ -47,13 +54,32 @@ describe('Pruebas al controlador de usuarios', () => {
 					inject: [ RepositorioUsuario ],
 					useFactory: servicioSignInUsuarioProveedor
 				},
+				{
+					provide: ServicioActualizarMontoUsuario,
+					inject: [ RepositorioUsuario ],
+					useFactory: servicioActualizarMontoUsuarioProveedor
+				},
 				{ provide: RepositorioUsuario, useValue: repositorioUsuario },
 				{ provide: DaoUsuario, useValue: daoUsuario },
 				ManejadorRegistrarUsuario,
 				ManejadorListarUsuario,
-				ManejadorSignInUsuario
+				ManejadorSignInUsuario,
+				ManejadorActualizarMontoUsuario
 			]
-		}).compile();
+		})
+			.overrideGuard(AuthGuard('jwt'))
+			.useValue({
+				canActivate: (context: ExecutionContext) => {
+					const req = context.switchToHttp().getRequest();
+					req.user = {
+						id: 1,
+						nombre: 'Daniel',
+						
+					};
+					return true;
+				}
+			})
+			.compile();
 
 		app = moduleRef.createNestApplication();
 		const logger = await app.resolve(AppLogger);
@@ -83,13 +109,13 @@ describe('Pruebas al controlador de usuarios', () => {
 			fechaCreacion: new Date().toISOString(),
 			clave: '123'
 		};
-		const mensaje = 'El tamaño mínimo de la clave debe ser 4';
+		const mensaje = 'Longitud de clave inválida';
 
 		const response = await request(app.getHttpServer())
 			.post('/usuarios')
 			.send(usuario)
 			.expect(HttpStatus.BAD_REQUEST);
-		expect(response.body.message).toBe(mensaje);
+		expect(response.body.message[0].constraints.minLength).toBe(mensaje);
 		expect(response.body.statusCode).toBe(HttpStatus.BAD_REQUEST);
 	});
 
@@ -108,5 +134,21 @@ describe('Pruebas al controlador de usuarios', () => {
 			.expect(HttpStatus.BAD_REQUEST);
 		expect(response.body.message).toBe(mensaje);
 		expect(response.body.statusCode).toBe(HttpStatus.BAD_REQUEST);
+	});
+
+	it('deberia fallar al tener un usuario incorrecto', async () => {
+		const usuario: ComandoRegistrarUsuario = {
+			nombre: 'Lorem ipsum',
+			fechaCreacion: new Date().toISOString(),
+			clave: '1234'
+		};
+
+		const response = await request(app.getHttpServer())
+			.patch('/usuarios/actualizar-monto')
+			.send({ monto: 500000 })
+			.expect(HttpStatus.BAD_REQUEST);
+		const mensaje = 'El usuario no existe';
+
+		expect(response.body.message).toBe(mensaje);
 	});
 });
