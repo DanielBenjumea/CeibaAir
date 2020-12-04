@@ -13,9 +13,6 @@ import { ComandoRegistrarUsuario } from 'src/aplicacion/usuario/comando/registra
 import { AppLogger } from 'src/infraestructura/configuracion/ceiba-logger.service';
 import { createSandbox, SinonStubbedInstance } from 'sinon';
 import { createStubObj } from '../../../util/create-object.stub';
-import { ManejadorSignInUsuario } from 'src/aplicacion/usuario/comando/signin-usuario.manejador';
-import { ServicioSignInUsuario } from 'src/dominio/usuario/servicio/servicio-signin-usuario';
-import { servicioSignInUsuarioProveedor } from 'src/infraestructura/usuario/proveedor/servicio/servicio-signin-usuario.proveedor';
 import { ServicioActualizarMontoUsuario } from 'src/dominio/usuario/servicio/servicio-actualizar-monto-usuario';
 import { ManejadorActualizarMontoUsuario } from 'src/aplicacion/usuario/comando/actualizar-monto-usuario.manejador';
 import { AuthGuard } from '@nestjs/passport';
@@ -51,11 +48,6 @@ describe('Pruebas al controlador de usuarios', () => {
 					useFactory: servicioRegistrarUsuarioProveedor
 				},
 				{
-					provide: ServicioSignInUsuario,
-					inject: [ RepositorioUsuario ],
-					useFactory: servicioSignInUsuarioProveedor
-				},
-				{
 					provide: ServicioActualizarMontoUsuario,
 					inject: [ RepositorioUsuario ],
 					useFactory: servicioActualizarMontoUsuarioProveedor
@@ -64,7 +56,6 @@ describe('Pruebas al controlador de usuarios', () => {
 				{ provide: DaoUsuario, useValue: daoUsuario },
 				ManejadorRegistrarUsuario,
 				ManejadorListarUsuario,
-				ManejadorSignInUsuario,
 				ManejadorActualizarMontoUsuario
 			]
 		})
