@@ -40,6 +40,5 @@ describe('ServicioAuth', () => {
 		await expect(
 			await servicioAuth.validateUser('juan', '1234')
 		).toEqual({ nombre: 'juan' });
-	
 	});
 });

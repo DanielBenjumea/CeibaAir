@@ -6,6 +6,6 @@ import { Usuario } from 'src/dominio/usuario/modelo/usuario';
 export class ManejadorAuth {
 	constructor(private _servicioAuth: ServicioAuth) {}
 	async ejecutar(usuario: Usuario) {
-		return this._servicioAuth.login(usuario);
+		return await this._servicioAuth.login(usuario);
 	}
 }

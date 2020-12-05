@@ -12,12 +12,10 @@ export class ServicioAuth {
 			const { clave, ...result } = user;
 			return result;
 		}
-		
-		console.log(user)
 		return false;
 	}
 
 	async login(user: any) {
-		return this._repositorioAuth.signToken(user);
+		return await this._repositorioAuth.signToken(user);
 	}
 }

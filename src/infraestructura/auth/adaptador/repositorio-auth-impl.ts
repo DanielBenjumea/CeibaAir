@@ -7,9 +7,9 @@ import { Usuario } from 'src/dominio/usuario/modelo/usuario';
 export class RepositorioAuthImpl implements RepositorioAuth {
 	constructor(private jwtService: JwtService) {}
 
-	signToken(usuario: Usuario) {
+	async signToken(usuario: Usuario) {
 		return {
-			token: this.jwtService.sign(usuario)
+			token: await this.jwtService.sign(usuario)
 		};
 	}
 }
