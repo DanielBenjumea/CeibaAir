@@ -171,7 +171,7 @@ describe('Pruebas al controlador de usuarios', () => {
 			monto: 500000
 		};
 		repositorioUsuario.findUsuarioById.returns(Promise.resolve(usuario));
-		
+
 		await request(app.getHttpServer())
 			.patch('/usuarios/actualizar-monto')
 			.send({ monto: 100000 })
