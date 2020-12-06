@@ -156,7 +156,7 @@ describe('Pruebas al controlador de usuarios', () => {
 			.patch('/usuarios/actualizar-monto')
 			.send({ monto: 5000000 })
 			.expect(HttpStatus.BAD_REQUEST);
-		const mensaje = 'El monto máximo por usuario es 1000000';
+		const mensaje = 'El monto máximo por usuario es 2000000';
 
 		expect(response.body.message).toBe(mensaje);
 	});

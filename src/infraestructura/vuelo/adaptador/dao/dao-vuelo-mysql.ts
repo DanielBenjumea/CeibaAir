@@ -11,4 +11,8 @@ export class DaoVueloMysql implements DaoVuelo {
 	async listar(): Promise<VueloDto[]> {
 		return this.entityManager.query('SELECT v.desde, v.hacia, v.precio, v.fecha FROM vuelo as v');
 	}
+
+	async getVueloById(id: number): Promise<VueloDto> {
+		return this.entityManager.findOne(VueloDto, id);
+	}
 }

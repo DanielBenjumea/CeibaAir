@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Request, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Post, Request, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ComandoAgregarVuelo } from 'src/aplicacion/vuelo/comando/agregar-vuelo.comando';
 import { ManejadorAgregarVuelo } from 'src/aplicacion/vuelo/comando/agregar-vuelo.manejador';
@@ -23,6 +23,6 @@ export class VueloControlador {
 	@Post('enlistar')
 	@UseGuards(AuthGuard('jwt'))
 	async enlistar(@Body() comandoEnlistarVuelo: ComandoEnlistarVuelo, @Request() req) {
-		this._manejadorEnlistarVuelo.ejecutar(comandoEnlistarVuelo.vuelo, req.user.userId);
+		await this._manejadorEnlistarVuelo.ejecutar(comandoEnlistarVuelo.vuelo, req.user.id);
 	}
 }

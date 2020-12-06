@@ -22,15 +22,14 @@ export class RepositorioVueloMysql implements RepositorioVuelo {
 		await this.vueloRepositorio.save(entidad);
 	}
 
-	async enlistar(vuelo: number, usuario: number) {
-		const vueloEntidad: VueloEntidad = await this.vueloRepositorio.findOne(vuelo, {
+	async getVueloById(vuelo: number): Promise<VueloEntidad> {
+		return this.vueloRepositorio.findOne(vuelo, {
 			relations: [ 'passengers' ]
 		});
-		const usuarioExists = vueloEntidad.passengers.find(user => user.id === usuario);
-		if(!usuarioExists) {
-			const usuarioEntidad: UsuarioEntidad = await this.usuarioRepositorio.findOne(usuario);
-			vueloEntidad.passengers.push(usuarioEntidad)
-		}
-		await this.vueloRepositorio.save(vueloEntidad);
+	}
+
+	async enlistar(vuelo: VueloEntidad, usuario: UsuarioEntidad) {
+		await this.usuarioRepositorio.save(usuario);
+		await this.vueloRepositorio.save(vuelo);
 	}
 }

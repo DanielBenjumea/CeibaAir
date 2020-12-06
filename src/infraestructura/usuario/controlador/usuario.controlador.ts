@@ -22,7 +22,7 @@ export class UsuarioControlador {
 
 	@Get()
 	async listar(): Promise<UsuarioDto[]> {
-		return this._manejadorListarUsuario.ejecutar();
+		return await this._manejadorListarUsuario.ejecutar();
 	}
 
 	@Patch('actualizar-monto')

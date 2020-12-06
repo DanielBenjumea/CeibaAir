@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-
 import { DaoUsuario } from 'src/dominio/usuario/puerto/dao/dao-usuario';
 import { UsuarioDto } from 'src/aplicacion/usuario/consulta/dto/usuario.dto';
 
