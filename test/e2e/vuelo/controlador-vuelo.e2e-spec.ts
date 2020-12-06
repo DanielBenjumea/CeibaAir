@@ -20,6 +20,7 @@ import { ComandoEnlistarVuelo } from 'src/aplicacion/vuelo/comando/enlistar-vuel
 import { RepositorioUsuario } from 'src/dominio/usuario/puerto/repositorio/repositorio-usuario';
 import { VueloEntidad } from 'src/infraestructura/vuelo/entidad/vuelo.entidad';
 import { UsuarioEntidad } from 'src/infraestructura/usuario/entidad/usuario.entidad';
+import { ManejadorListarVuelo } from 'src/aplicacion/vuelo/consulta/listar-vuelos.manejador';
 
 const sinonSandbox = createSandbox();
 
@@ -31,7 +32,15 @@ describe('Pruebas al controlador de usuarios', () => {
 
 	beforeAll(async () => {
 		repositorioVuelo = createStubObj<RepositorioVuelo>([ 'guardar', 'enlistar', 'getVueloById' ]);
-		repositorioUsuario = createStubObj<RepositorioUsuario>([ 'actualizarMontoUsuario', 'existeNombreUsuario', 'findUsuarioById', 'findUsuarioByName', 'guardar' ]);
+		repositorioUsuario = createStubObj<RepositorioUsuario>([
+			'actualizarMontoUsuario',
+			'existeNombreUsuario',
+			'findUsuarioById',
+			'findUsuarioByName',
+			'guardar'
+		]);
+		daoVuelo = createStubObj<DaoVuelo>([ 'listar' ], sinonSandbox);
+
 		const moduleRef = await Test.createTestingModule({
 			controllers: [ VueloControlador ],
 			providers: [
@@ -43,14 +52,15 @@ describe('Pruebas al controlador de usuarios', () => {
 				},
 				{
 					provide: ServicioEnlistarVuelo,
-					inject: [ RepositorioVuelo,RepositorioUsuario ],
+					inject: [ RepositorioVuelo, RepositorioUsuario ],
 					useFactory: servicioEnlistarVueloProveedor
 				},
 				{ provide: RepositorioVuelo, useValue: repositorioVuelo },
 				{ provide: DaoVuelo, useValue: daoVuelo },
 				{ provide: RepositorioUsuario, useValue: repositorioUsuario },
 				ManejadorAgregarVuelo,
-				ManejadorEnlistarVuelo
+				ManejadorEnlistarVuelo,
+				ManejadorListarVuelo
 			]
 		})
 			.overrideGuard(AuthGuard('jwt'))
@@ -99,6 +109,23 @@ describe('Pruebas al controlador de usuarios', () => {
 		expect(response.body.statusCode).toBe(HttpStatus.BAD_REQUEST);
 	});
 
+	it('deberia listar todos los vuelos', async () => {
+		const vuelos: any[] = [
+			{
+				id: 1,
+				desde: 'Bogota',
+				hacia: 'Medellín',
+				precio: 1000000,
+				fecha: new Date().toISOString(),
+				passengers: []
+			}
+		];
+
+		daoVuelo.listar.returns(Promise.resolve(vuelos));
+
+		await request(app.getHttpServer()).get('/vuelos').expect(HttpStatus.OK).expect(vuelos);
+	});
+
 	it('debería registrar al usuario actual en un vuelo con el id', async () => {
 		const vuelo: ComandoEnlistarVuelo = {
 			vuelo: 1
@@ -113,17 +140,15 @@ describe('Pruebas al controlador de usuarios', () => {
 		vueloEntidad.passengers = new Array<UsuarioEntidad>();
 
 		repositorioVuelo.getVueloById.returns(Promise.resolve(vueloEntidad));
-
 		const usuarioEntidad = new UsuarioEntidad();
 		usuarioEntidad.id = 1;
 		usuarioEntidad.nombre = 'lorem ipsum';
 		usuarioEntidad.fechaCreacion = new Date();
 		usuarioEntidad.isAdmin = false;
 		usuarioEntidad.clave = 'lorem ipsum';
-		usuarioEntidad.monto = 1000000
+		usuarioEntidad.monto = 1000000;
 
 		repositorioUsuario.findUsuarioById.returns(Promise.resolve(usuarioEntidad));
-		
 
 		await request(app.getHttpServer()).post('/vuelos/enlistar').send(vuelo).expect(HttpStatus.CREATED);
 	});

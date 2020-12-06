@@ -1,5 +1,6 @@
 import { number } from '@hapi/joi';
 import { ApiProperty } from '@nestjs/swagger';
+import { UsuarioDto } from 'src/aplicacion/usuario/consulta/dto/usuario.dto';
 
 export class VueloDto {
 	@ApiProperty({ example: 'Bogota' })
@@ -13,4 +14,7 @@ export class VueloDto {
 
 	@ApiProperty({ type: Date })
 	fecha: Date;
+
+	@ApiProperty({ type: Array })
+	passengers: Array<UsuarioDto>;
 }

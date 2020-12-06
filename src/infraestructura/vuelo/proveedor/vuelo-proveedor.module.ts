@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ManejadorAgregarVuelo } from 'src/aplicacion/vuelo/comando/agregar-vuelo.manejador';
 import { ManejadorEnlistarVuelo } from 'src/aplicacion/vuelo/comando/enlistar-vuelo.manejador';
+import { ManejadorListarVuelo } from 'src/aplicacion/vuelo/consulta/listar-vuelos.manejador';
 import { RepositorioUsuario } from 'src/dominio/usuario/puerto/repositorio/repositorio-usuario';
 import { RepositorioVuelo } from 'src/dominio/vuelo/puerto/repositorio/repositorio-vuelo';
 import { ServicioAgregarVuelo } from 'src/dominio/vuelo/servicio/servicio-agregar-vuelo';
@@ -31,8 +32,9 @@ import { servicioEnlistarVueloProveedor } from './servicio/servicio-enlistar-vue
 		repositorioUsuarioProvider,
 		daoVueloProvider,
 		ManejadorAgregarVuelo,
-		ManejadorEnlistarVuelo
+		ManejadorEnlistarVuelo,
+		ManejadorListarVuelo
 	],
-	exports: [ ServicioAgregarVuelo, ManejadorAgregarVuelo, ManejadorEnlistarVuelo ]
+	exports: [ ServicioAgregarVuelo, ManejadorAgregarVuelo, ManejadorEnlistarVuelo, ManejadorListarVuelo ]
 })
 export class VueloProveedorModule {}
