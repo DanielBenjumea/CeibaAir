@@ -17,17 +17,21 @@ import { servicioEnlistarVueloProveedor } from 'src/infraestructura/vuelo/provee
 import { createStubObj } from 'test/util/create-object.stub';
 import { DaoVuelo } from 'src/dominio/vuelo/puerto/dao/dao-vuelo';
 import { ComandoEnlistarVuelo } from 'src/aplicacion/vuelo/comando/enlistar-vuelo.comando';
+import { RepositorioUsuario } from 'src/dominio/usuario/puerto/repositorio/repositorio-usuario';
+import { VueloEntidad } from 'src/infraestructura/vuelo/entidad/vuelo.entidad';
+import { UsuarioEntidad } from 'src/infraestructura/usuario/entidad/usuario.entidad';
 
 const sinonSandbox = createSandbox();
 
 describe('Pruebas al controlador de usuarios', () => {
 	let app: INestApplication;
 	let repositorioVuelo: SinonStubbedInstance<RepositorioVuelo>;
+	let repositorioUsuario: SinonStubbedInstance<RepositorioUsuario>;
 	let daoVuelo: SinonStubbedInstance<DaoVuelo>;
 
 	beforeAll(async () => {
-		repositorioVuelo = createStubObj<RepositorioVuelo>([ 'guardar', 'enlistar' ]);
-
+		repositorioVuelo = createStubObj<RepositorioVuelo>([ 'guardar', 'enlistar', 'getVueloById' ]);
+		repositorioUsuario = createStubObj<RepositorioUsuario>([ 'actualizarMontoUsuario', 'existeNombreUsuario', 'findUsuarioById', 'findUsuarioByName', 'guardar' ]);
 		const moduleRef = await Test.createTestingModule({
 			controllers: [ VueloControlador ],
 			providers: [
@@ -39,11 +43,12 @@ describe('Pruebas al controlador de usuarios', () => {
 				},
 				{
 					provide: ServicioEnlistarVuelo,
-					inject: [ RepositorioVuelo ],
+					inject: [ RepositorioVuelo,RepositorioUsuario ],
 					useFactory: servicioEnlistarVueloProveedor
 				},
 				{ provide: RepositorioVuelo, useValue: repositorioVuelo },
 				{ provide: DaoVuelo, useValue: daoVuelo },
+				{ provide: RepositorioUsuario, useValue: repositorioUsuario },
 				ManejadorAgregarVuelo,
 				ManejadorEnlistarVuelo
 			]
@@ -98,6 +103,28 @@ describe('Pruebas al controlador de usuarios', () => {
 		const vuelo: ComandoEnlistarVuelo = {
 			vuelo: 1
 		};
+
+		const vueloEntidad = new VueloEntidad();
+		vueloEntidad.desde = 'Bogota';
+		vueloEntidad.hacia = 'Medellin';
+		vueloEntidad.fecha = new Date();
+		vueloEntidad.id = 1;
+		vueloEntidad.precio = 500000;
+		vueloEntidad.passengers = new Array<UsuarioEntidad>();
+
+		repositorioVuelo.getVueloById.returns(Promise.resolve(vueloEntidad));
+
+		const usuarioEntidad = new UsuarioEntidad();
+		usuarioEntidad.id = 1;
+		usuarioEntidad.nombre = 'lorem ipsum';
+		usuarioEntidad.fechaCreacion = new Date();
+		usuarioEntidad.isAdmin = false;
+		usuarioEntidad.clave = 'lorem ipsum';
+		usuarioEntidad.monto = 1000000
+
+		repositorioUsuario.findUsuarioById.returns(Promise.resolve(usuarioEntidad));
+		
+
 		await request(app.getHttpServer()).post('/vuelos/enlistar').send(vuelo).expect(HttpStatus.CREATED);
 	});
 });
