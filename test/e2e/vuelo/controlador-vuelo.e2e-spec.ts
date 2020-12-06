@@ -21,6 +21,7 @@ import { RepositorioUsuario } from 'src/dominio/usuario/puerto/repositorio/repos
 import { VueloEntidad } from 'src/infraestructura/vuelo/entidad/vuelo.entidad';
 import { UsuarioEntidad } from 'src/infraestructura/usuario/entidad/usuario.entidad';
 import { ManejadorListarVuelo } from 'src/aplicacion/vuelo/consulta/listar-vuelos.manejador';
+import { ManejadorListarVueloByUser } from 'src/aplicacion/vuelo/consulta/listar-vuelo-by-user.manejador';
 
 const sinonSandbox = createSandbox();
 
@@ -60,7 +61,8 @@ describe('Pruebas al controlador de usuarios', () => {
 				{ provide: RepositorioUsuario, useValue: repositorioUsuario },
 				ManejadorAgregarVuelo,
 				ManejadorEnlistarVuelo,
-				ManejadorListarVuelo
+				ManejadorListarVuelo,
+				ManejadorListarVueloByUser
 			]
 		})
 			.overrideGuard(AuthGuard('jwt'))
