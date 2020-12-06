@@ -4,6 +4,7 @@ import { ComandoAgregarVuelo } from 'src/aplicacion/vuelo/comando/agregar-vuelo.
 import { ManejadorAgregarVuelo } from 'src/aplicacion/vuelo/comando/agregar-vuelo.manejador';
 import { ComandoEnlistarVuelo } from 'src/aplicacion/vuelo/comando/enlistar-vuelo.comando';
 import { ManejadorEnlistarVuelo } from 'src/aplicacion/vuelo/comando/enlistar-vuelo.manejador';
+import { ManejadorListarVueloByUser } from 'src/aplicacion/vuelo/consulta/listar-vuelo-by-user.manejador';
 import { ManejadorListarVuelo } from 'src/aplicacion/vuelo/consulta/listar-vuelos.manejador';
 import { RolesGuard } from 'src/infraestructura/Guards/roles.guard';
 import { VueloEntidad } from '../entidad/vuelo.entidad';
@@ -13,7 +14,8 @@ export class VueloControlador {
 	constructor(
 		private readonly _manejadorAgregarVuelo: ManejadorAgregarVuelo,
 		private readonly _manejadorEnlistarVuelo: ManejadorEnlistarVuelo,
-		private readonly _manejadorListarVuelo: ManejadorListarVuelo
+		private readonly _manejadorListarVuelo: ManejadorListarVuelo,
+		private readonly _manejadorListarVueloByUser: ManejadorListarVueloByUser
 	) {}
 
 	@Post()
@@ -32,5 +34,11 @@ export class VueloControlador {
 	@Get()
 	async listar(): Promise<VueloEntidad[]> {
 		return await this._manejadorListarVuelo.ejecutar();
+	}
+
+	@Get('mis-vuelos')
+	@UseGuards(AuthGuard('jwt'))
+	async listarVuelosByUser(@Request() req) {
+		return await this._manejadorListarVueloByUser.ejecutar(req.user.id);
 	}
 }

@@ -10,9 +10,19 @@ export class DaoVueloMysql implements DaoVuelo {
 	constructor(@InjectEntityManager() private entityManager: EntityManager) {}
 
 	async listar(): Promise<VueloEntidad[]> {
-		return this.entityManager.find(VueloEntidad ,{
+		return this.entityManager.find(VueloEntidad, {
 			relations: [ 'passengers' ]
 		});
+	}
+
+	async listarByUser(user: number): Promise<VueloEntidad[]> {
+		const vuelos = await this.entityManager.find(VueloEntidad, {
+			relations: [ 'passengers' ]
+		});
+		const vuelosUsuario = vuelos.filter((vuelo) => {
+			return !!vuelo.passengers.find((passenger) => passenger.id === user);
+		});
+		return vuelosUsuario;
 	}
 
 	async getVueloById(id: number): Promise<VueloDto> {
