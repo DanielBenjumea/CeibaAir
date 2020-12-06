@@ -9,7 +9,7 @@ export class RepositorioAuthImpl implements RepositorioAuth {
 
 	async signToken(usuario: Usuario) {
 		return {
-			token: await this.jwtService.sign(usuario)
+			token: this.jwtService.sign(usuario)
 		};
 	}
 }

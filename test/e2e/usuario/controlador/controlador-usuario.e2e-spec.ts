@@ -65,8 +65,11 @@ describe('Pruebas al controlador de usuarios', () => {
 					const req = context.switchToHttp().getRequest();
 					req.user = {
 						id: 1,
-						nombre: 'Daniel',
-						
+						nombre: 'lorem ipsum',
+						fechaCreacion: new Date(),
+						isAdmin: false,
+						clave: 'lorem ipsum',
+						monto: 100000
 					};
 					return true;
 				}
@@ -146,9 +149,8 @@ describe('Pruebas al controlador de usuarios', () => {
 			isAdmin: false,
 			clave: 'lorem ipsum',
 			monto: 100000
-
-		}
-		repositorioUsuario.findUsuarioById.returns(Promise.resolve(usuario))
+		};
+		repositorioUsuario.findUsuarioById.returns(Promise.resolve(usuario));
 
 		const response = await request(app.getHttpServer())
 			.patch('/usuarios/actualizar-monto')
@@ -157,6 +159,22 @@ describe('Pruebas al controlador de usuarios', () => {
 		const mensaje = 'El monto máximo por usuario es 1000000';
 
 		expect(response.body.message).toBe(mensaje);
+	});
 
-	})
+	it('debería pasar al actualizar un usuario con menos de 1000000', async () => {
+		const usuario: UsuarioEntidad = {
+			id: 1,
+			nombre: 'lorem ipsum',
+			fechaCreacion: new Date(),
+			isAdmin: false,
+			clave: 'lorem ipsum',
+			monto: 500000
+		};
+		repositorioUsuario.findUsuarioById.returns(Promise.resolve(usuario));
+		
+		await request(app.getHttpServer())
+			.patch('/usuarios/actualizar-monto')
+			.send({ monto: 100000 })
+			.expect(HttpStatus.OK);
+	});
 });
