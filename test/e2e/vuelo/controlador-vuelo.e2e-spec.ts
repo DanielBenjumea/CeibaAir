@@ -16,6 +16,7 @@ import { servicioAgregarVueloProveedor } from 'src/infraestructura/vuelo/proveed
 import { servicioEnlistarVueloProveedor } from 'src/infraestructura/vuelo/proveedor/servicio/servicio-enlistar-vuelo.proveedor';
 import { createStubObj } from 'test/util/create-object.stub';
 import { DaoVuelo } from 'src/dominio/vuelo/puerto/dao/dao-vuelo';
+import { ComandoEnlistarVuelo } from 'src/aplicacion/vuelo/comando/enlistar-vuelo.comando';
 
 const sinonSandbox = createSandbox();
 
@@ -25,12 +26,12 @@ describe('Pruebas al controlador de usuarios', () => {
 	let daoVuelo: SinonStubbedInstance<DaoVuelo>;
 
 	beforeAll(async () => {
-		repositorioVuelo = createStubObj<RepositorioVuelo>([ 'guardar' ]);
+		repositorioVuelo = createStubObj<RepositorioVuelo>([ 'guardar', 'enlistar' ]);
 
 		const moduleRef = await Test.createTestingModule({
 			controllers: [ VueloControlador ],
 			providers: [
-                AppLogger,
+				AppLogger,
 				{
 					provide: ServicioAgregarVuelo,
 					inject: [ RepositorioVuelo ],
@@ -62,8 +63,8 @@ describe('Pruebas al controlador de usuarios', () => {
 					return true;
 				}
 			})
-            .compile();
-            
+			.compile();
+
 		app = moduleRef.createNestApplication();
 		const logger = await app.resolve(AppLogger);
 		logger.customError = sinonSandbox.stub();
@@ -87,12 +88,16 @@ describe('Pruebas al controlador de usuarios', () => {
 			precio: 1500000
 		};
 
-        const mensaje = 'El precio del vuelo debe estar entre 0 y 1000000';
-        const response = await request(app.getHttpServer())
-            .post('/vuelos')
-            .send(vuelo)
-            .expect(HttpStatus.BAD_REQUEST);
-        expect(response.body.message).toBe(mensaje);
-        expect(response.body.statusCode).toBe(HttpStatus.BAD_REQUEST)
-    });
+		const mensaje = 'El precio del vuelo debe estar entre 0 y 1000000';
+		const response = await request(app.getHttpServer()).post('/vuelos').send(vuelo).expect(HttpStatus.BAD_REQUEST);
+		expect(response.body.message).toBe(mensaje);
+		expect(response.body.statusCode).toBe(HttpStatus.BAD_REQUEST);
+	});
+
+	it('debería registrar al usuario actual en un vuelo con el id', async () => {
+		const vuelo: ComandoEnlistarVuelo = {
+			vuelo: 1
+		};
+		await request(app.getHttpServer()).post('/vuelos/enlistar').send(vuelo).expect(HttpStatus.CREATED);
+	});
 });
